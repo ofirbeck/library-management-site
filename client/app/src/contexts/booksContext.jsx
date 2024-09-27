@@ -1,6 +1,12 @@
-import { useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-const useBooks = () => {
+const BooksContext = createContext();
+
+export const useBooks = () => {
+  return useContext(BooksContext);
+};
+
+export const BooksProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
   const [newTitles, setNewTitles] = useState({});
 
@@ -77,13 +83,9 @@ const useBooks = () => {
     getBooks();
   }, []);
 
-  return {
-    books,
-    createNewBook,
-    handleNewTitleChange,
-    updateTitle,
-    deleteBook,
-  };
+  return (
+    <BooksContext.Provider value={{ books, createNewBook, handleNewTitleChange, updateTitle, deleteBook }}>
+      {children}
+    </BooksContext.Provider>
+  );
 };
-
-export default useBooks;

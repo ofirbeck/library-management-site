@@ -1,13 +1,13 @@
 import React from 'react';
-import useBooks from '../hooks/useBooks';
+import {useBooks} from '../contexts/booksContext';
 
 
-const BookItem = ({book, handleNewTitleChange, updateTitle, deleteBook }) => {
-    // const {
-    //     handleNewTitleChange,
-    //     updateTitle,
-    //     deleteBook,
-    //   } = useBooks();
+const BookItem = ({book}) => {
+    const {
+         handleNewTitleChange,
+         updateTitle,
+         deleteBook,
+       } = useBooks();
     return (
     <div>
       <h4>Title: {book.title}</h4>
