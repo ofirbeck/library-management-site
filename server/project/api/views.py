@@ -3,7 +3,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import BookSerializer
 from .models import Book
+from .constants import GENRE_CHOICES
 
+@api_view(['GET'])
+def get_genre_list(request):
+    genres = [genre[0] for genre in GENRE_CHOICES]
+    return Response(genres)
 
 @api_view(['GET'])
 def get_book_list(request):

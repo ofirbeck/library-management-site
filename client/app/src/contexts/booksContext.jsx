@@ -20,10 +20,12 @@ export const BooksProvider = ({ children }) => {
     }
   };
 
-  const createNewBook = async (title, releaseYear) => {
+  const createNewBook = async (title, author, genre, copies) => {
     const bookData = {
       title: title,
-      year_of_release: releaseYear
+      author: author,
+      genre: genre,
+      copies_available: copies
     };
     try {
       const response = await fetch("http://127.0.0.1:8000/api/books/create/", {
@@ -47,11 +49,13 @@ export const BooksProvider = ({ children }) => {
     }));
   };
 
-  const updateTitle = async (pk, yearOfRelease) => {
+  const updateTitle = async (pk, author, genre, copies) => {
     const newTitle = newTitles[pk];
     const bookData = {
       title: newTitle,
-      year_of_release: yearOfRelease
+      author: author,
+      genre: genre,
+      copies_available: copies    
     };
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/books/${pk}/`, {
