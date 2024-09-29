@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import '@picocss/pico';
 import './App.css'
 import { BooksProvider } from './contexts/booksContext';
 import BookList from './components/BookList';

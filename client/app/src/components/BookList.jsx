@@ -5,18 +5,25 @@ import {useBooks} from '../contexts/booksContext';
 const BookList = () => {
     const {
         books,
-        handleNewTitleChange, 
-        updateTitle, 
-        deleteBook
         } = useBooks();
   return (
-    <div>
-      {books.map((book) => (
-        <BookItem
-          key={book.id}
-          book={book}
-        />
-      ))}
+    <div className="container">
+      <table role="grid">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genre</th>
+            <th>Copies available</th>
+            <th>Edit options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((book) => (
+            <BookItem key={book.id} book={book} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

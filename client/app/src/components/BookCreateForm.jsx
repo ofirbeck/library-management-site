@@ -8,6 +8,7 @@ const BookForm = () => {
   const [genre, setGenre] = useState("");
   const [copies, setCopies] = useState("");
   const [allGenres, setAllGenres] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
     createNewBook
@@ -29,7 +30,12 @@ const BookForm = () => {
 
 
   return (
+    <>
+    <button onClick={() => setIsDialogOpen(true)}>Add a New Book</button>
+    <dialog open={isDialogOpen}>
     <form onSubmit={() => createNewBook(title, author, genre, copies)}>
+    <button type="button" className="secondary" onClick={() => setIsDialogOpen(false)} style={{ float: 'right' }}>X</button>
+
       <input
         type="text"
         placeholder="Book title"
@@ -56,8 +62,10 @@ const BookForm = () => {
         value={copies}
         onChange={(e) => setCopies(e.target.value)}
       />
-      <button type="submit">Add Book to the Library</button>
+      <button type="submit">Add this Book to the Library</button>
     </form>
+    </dialog>
+    </>
   );
 };
 
