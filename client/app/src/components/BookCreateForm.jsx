@@ -16,7 +16,13 @@ const BookForm = () => {
 
   const getGenres = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/genres/");
+      const response = await fetch("http://127.0.0.1:8000/api/genres/", {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setAllGenres(data);
     } catch (error) {

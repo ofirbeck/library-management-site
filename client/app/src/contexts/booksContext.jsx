@@ -12,7 +12,13 @@ export const BooksProvider = ({ children }) => {
 
   const getBooks = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/books/");
+      const response = await fetch("http://127.0.0.1:8000/api/books/", {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setBooks(data);
     } catch (error) {
@@ -31,6 +37,7 @@ export const BooksProvider = ({ children }) => {
       const response = await fetch("http://127.0.0.1:8000/api/books/create/", {
         method: "POST",
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(bookData),
@@ -61,6 +68,7 @@ export const BooksProvider = ({ children }) => {
       const response = await fetch(`http://127.0.0.1:8000/api/books/${pk}/`, {
         method: "PUT",
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(bookData),
@@ -76,6 +84,10 @@ export const BooksProvider = ({ children }) => {
     try {
       await fetch(`http://127.0.0.1:8000/api/books/${pk}/`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          "Content-Type": "application/json",
+        },
       });
       setBooks(books.filter((book) => book.id !== pk));
     } catch (error) {

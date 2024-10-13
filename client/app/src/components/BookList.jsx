@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BookItem from './BookItem';
 import { useBooks } from '../contexts/booksContext';
-import { FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaSortUp, FaSortDown, FaSort } from 'react-icons/fa';
 
 const BookList = () => {
   const booksPerPage = 5; // might add an option to choose how much books are on each page
@@ -44,7 +44,7 @@ const BookList = () => {
     if (sortConfig.key === key) {
       return sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />;
     }
-    return null;
+    return <FaSort/>;
   };
 
   return (
