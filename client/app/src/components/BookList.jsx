@@ -5,7 +5,7 @@ import { useBooks } from '../contexts/booksContext';
 import { FaSortUp, FaSortDown, FaSort } from 'react-icons/fa';
 
 const BookList = () => {
-  const booksPerPage = 2; // might add an option to choose how much books are on each page
+  const booksPerPage = 5; // might add an option to choose how much books are on each page
   const {books, currentBooksPage, setCurrentBooksPage} = useBooks();
   const [sortConfig, setSortConfig] = useState({ key: 'title', direction: 'asc' });
   const indexOfLastItem = currentBooksPage * booksPerPage;
@@ -13,7 +13,7 @@ const BookList = () => {
   const currentBooks = books.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(books.length / booksPerPage) || 1; 
 
-  
+
   const handleNextPage = () => {
     setCurrentBooksPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
