@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import BookItem from './BookItem';
+import BookSearchBar from './bookSearchBar';
 import { useBooks } from '../contexts/booksContext';
 import { FaSortUp, FaSortDown, FaSort } from 'react-icons/fa';
 
 const BookList = () => {
-  const booksPerPage = 5; // might add an option to choose how much books are on each page
-  const { books } = useBooks();
+  const booksPerPage = 2; // might add an option to choose how much books are on each page
+  const {books, currentBooksPage, setCurrentBooksPage} = useBooks();
   const [sortConfig, setSortConfig] = useState({ key: 'title', direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const indexOfLastItem = currentPage * booksPerPage;
+  const indexOfLastItem = currentBooksPage * booksPerPage;
   const indexOfFirstItem = indexOfLastItem - booksPerPage;
   const currentBooks = books.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(books.length / booksPerPage);
- 
+  const totalPages = Math.ceil(books.length / booksPerPage) || 1; 
+
+  
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    setCurrentBooksPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    setCurrentBooksPage((prevPage) => Math.max(prevPage - 1, 1));
   };
   
   const handleSort = (key) => {
@@ -27,7 +28,7 @@ const BookList = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
-    setCurrentPage(1); // MIGHT CHANGE LATER: currently returning the user to page 1 to see the results in the sorted way
+    setCurrentBooksPage(1); // MIGHT CHANGE LATER: currently returning the user to page 1 to see the results in the sorted way
 
     books.sort((a, b) => {
       if (a[key] < b[key]) {
@@ -49,6 +50,7 @@ const BookList = () => {
 
   return (
     <div className="container">
+      <BookSearchBar />
       <table role="grid">
         <thead>
           <tr>
@@ -74,13 +76,13 @@ const BookList = () => {
         </tbody>
       </table>
       <div className="pagination">
-        <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+        <button onClick={handlePreviousPage} disabled={currentBooksPage === 1}>
           Previous
         </button>
         <span>
-          Page {currentPage} of {totalPages}
+          Page {currentBooksPage} of {totalPages}
         </span>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        <button onClick={handleNextPage} disabled={currentBooksPage === totalPages}>
           Next
         </button>
       </div>

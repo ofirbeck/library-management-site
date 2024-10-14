@@ -9,10 +9,11 @@ export const useBooks = () => {
 export const BooksProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
   const [newTitles, setNewTitles] = useState({});
-
+  const [searchFor, setSearchFor] = useState('');
+  const [currentBooksPage, setCurrentBooksPage] = useState(1);
   const getBooks = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/books/", {
+    const response = await fetch(`http://127.0.0.1:8000/api/books/?search=${searchFor}`, {
         method: "GET",
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -96,11 +97,12 @@ export const BooksProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    setCurrentBooksPage(1);
     getBooks();
-  }, []);
+  }, [searchFor]);
 
   return (
-    <BooksContext.Provider value={{ books, createNewBook, handleNewTitleChange, updateTitle, deleteBook }}>
+    <BooksContext.Provider value={{ books, currentBooksPage, setCurrentBooksPage, searchFor, setSearchFor, getBooks, createNewBook, handleNewTitleChange, updateTitle, deleteBook }}>
       {children}
     </BooksContext.Provider>
   );

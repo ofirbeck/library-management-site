@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -5,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializer import BookSerializer, UserSerializer, LibraryAdminSerializer, LibrarySerializer
-from .models import Book, Library, User
+from .models import Book
 from .constants import GENRE_CHOICES
 
 @api_view(['POST'])
@@ -45,7 +46,16 @@ def get_genre_list(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_book_list(request):
-    books = Book.objects.filter(library=request.user.library)
+    search_query = request.GET.get('search', '')
+    if search_query != '':
+        books = Book.objects.filter(
+            Q(library=request.user.library) &
+            (Q(title__icontains=search_query) |
+             Q(author__icontains=search_query) |
+             Q(genre__icontains=search_query))
+        )
+    else:
+        books = Book.objects.filter(library=request.user.library)
     serializedData = BookSerializer(books, many=True).data
     return Response(serializedData)
 
