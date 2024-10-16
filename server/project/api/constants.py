@@ -7,3 +7,5 @@ GENRE_CHOICES = [
     ('History', 'History'),
     ('Children', 'Children'),
 ]
+
+MAX_COPIES_ALLOWED = 99

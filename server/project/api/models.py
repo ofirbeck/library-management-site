@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
-from .constants import GENRE_CHOICES
+from django.core.validators import MaxValueValidator
+from .constants import GENRE_CHOICES, MAX_COPIES_ALLOWED
+
 
 class Library(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -33,17 +35,32 @@ class Book(models.Model):
     title = models.CharField(max_length=100)
     author = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
-    copies_available = models.IntegerField()
+    copies_available = models.PositiveIntegerField(
+        validators=[MaxValueValidator(MAX_COPIES_ALLOWED)]
+    )
     library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='books')
 
     def __str__(self):
         return self.title
 
-class Borrow(models.Model):
-    book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
-    borrower_name = models.CharField(max_length=100)
-    borrow_date = models.DateField(auto_now_add=True)
-    return_date = models.DateField(null=True, blank=True)
+class BookCopy(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='copies')
+    is_borrowed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.borrower_name} borrowed {self.book.title}"
+        return f"{self.book.title} - Copy {self.id}"
+
+class Client(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    library = models.ForeignKey(Library, on_delete=models.CASCADE)
+    borrowed_books = models.ManyToManyField(BookCopy, through='Borrow')
+
+    def __str__(self):
+        return self.name
+
+class Borrow(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    book_copy = models.ForeignKey(BookCopy, on_delete=models.CASCADE)
+    borrowed_at = models.DateTimeField(auto_now_add=True)
+    returned_at = models.DateTimeField(null=True, blank=True)

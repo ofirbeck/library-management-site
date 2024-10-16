@@ -54,6 +54,7 @@ const BookList = () => {
       <table role="grid">
         <thead>
           <tr>
+            <th>Copies</th>
             <th onClick={() => handleSort('title')}>
               Title {getSortIcon('title')}
             </th>

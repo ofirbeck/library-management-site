@@ -1,6 +1,6 @@
 import React from 'react';
 import {useBooks} from '../contexts/booksContext';
-
+import CopiesList from './CopiesList';
 
 const BookItem = ({book}) => {
     const {
@@ -10,6 +10,9 @@ const BookItem = ({book}) => {
        } = useBooks();
     return (
     <tr>
+      <td>
+      <CopiesList bookId={book.id} />
+      </td>
       <td>{book.title} </td>
       <td>{book.author} </td>
       <td>{book.genre} </td>

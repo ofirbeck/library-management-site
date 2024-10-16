@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .utils import assign_permissions
-from .models import Book, Borrow, User, Library
+from .models import *
 
 class LibraryAdminSerializer(serializers.Serializer):
     library_name = serializers.CharField(max_length=255)
@@ -29,6 +29,7 @@ class LibrarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Library
         fields = '__all__'
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -37,6 +38,16 @@ class UserSerializer(serializers.ModelSerializer):
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
+        fields = '__all__'
+
+class BookCopySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookCopy
+        fields = '__all__'
+
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
         fields = '__all__'
 
 class BorrowSerializer(serializers.ModelSerializer):
