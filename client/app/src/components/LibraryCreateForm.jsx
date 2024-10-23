@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import {useUser} from '../contexts/userContext';
 
 const LibraryCreateForm = () => {
-  const {setUsername, username, libraryName, setLibraryName} = useUser();
+  const {setCurrentScreen} = useUser();
+  const [libraryName, setLibraryName] = useState('');
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState('');
+  const [username, setUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [message, setMessage] = useState('');
 
@@ -30,6 +32,8 @@ const LibraryCreateForm = () => {
         setAddress('');
         setUsername('');
         setAdminPassword('');
+        setStep(1);
+        setCurrentScreen('login');
       } else {
         setMessage('Error creating library.');
       }
