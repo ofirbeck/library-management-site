@@ -3,7 +3,8 @@ import {useUser} from '../contexts/userContext';
 
 
 const Login = () => {
-    const {setUser, setUsername, username, setCurrentScreen} = useUser();
+    const {setUser, setCurrentScreen} = useUser();
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [credsErrorMessage, setCredsErrorMessage] = useState('');
 
@@ -27,7 +28,6 @@ const Login = () => {
           console.log('Login successful:', data);
           localStorage.setItem('access_token', data.access);
           localStorage.setItem('refresh_token', data.refresh);
-          //localStorage.setItem('user_role', data.user.role);
           setUser(data.user);
           setCredsErrorMessage('');
           setCurrentScreen('view_books');

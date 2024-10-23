@@ -6,7 +6,7 @@ const BookForm = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [genre, setGenre] = useState("");
-  const [copies, setCopies] = useState("");
+  const [copies, setCopies] = useState(1);
   const [allGenres, setAllGenres] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -30,6 +30,16 @@ const BookForm = () => {
     }
   };
 
+  const handleCreateBook = async (e) => {
+    e.preventDefault();
+    await createNewBook(title, author, genre, copies);
+    setTitle("");
+    setAuthor("");
+    setGenre("");
+    setCopies(1);
+    setIsDialogOpen(false);
+  }
+
   useEffect(() => {
     getGenres();
   }, []);
@@ -39,9 +49,8 @@ const BookForm = () => {
     <>
     <button onClick={() => setIsDialogOpen(true)}>Add a New Book</button>
     <dialog open={isDialogOpen}>
-    <form onSubmit={() => createNewBook(title, author, genre, copies)}>
+    <form onSubmit={handleCreateBook}>
     <button type="button" className="secondary" onClick={() => setIsDialogOpen(false)} style={{ float: 'right' }}>X</button>
-
       <input
         type="text"
         placeholder="Book title"

@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializer import *
 from .models import Book
-from .constants import GENRE_CHOICES, ROLE_CHOICES
+from .constants import *
 from .decorators import role_required
 
 @api_view(['POST'])
@@ -46,7 +46,7 @@ def get_user_info(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-@role_required('manager')
+@role_required(MANAGER)
 def create_user(request):
     data = request.data.copy()
     data['library'] = request.user.library.id
@@ -58,7 +58,7 @@ def create_user(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-@role_required('manager')
+@role_required(MANAGER)
 def get_users_in_library(request):
     users = User.objects.filter(library=request.user.library).exclude(id=request.user.id)
     serializedData = UserSerializer(users, many=True).data
@@ -67,7 +67,7 @@ def get_users_in_library(request):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-@role_required('manager')
+@role_required(MANAGER)
 def delete_user(request, user_id):
     try:
         selectedUser = User.objects.get(pk=user_id)
@@ -78,7 +78,7 @@ def delete_user(request, user_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-@role_required('manager')
+@role_required(MANAGER)
 def get_roles_list(request):
     roles = [role[0] for role in ROLE_CHOICES]
     return Response(roles)
@@ -92,6 +92,7 @@ def get_genre_list(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@role_required(WORKER)
 def get_book_list(request):
     search_query = request.GET.get('search', '')
     if search_query != '':
@@ -109,9 +110,10 @@ def get_book_list(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@role_required(MANAGER)
 def create_new_book(request):
     data = request.data
-    data['library'] = request.user.library
+    data['library'] = request.user.library.id
     serializer = BookSerializer(data=data)
     if serializer.is_valid():
         newBook = serializer.save()
@@ -128,6 +130,7 @@ def create_new_book(request):
 
 @api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
+@role_required(MANAGER)
 def update_book(request, pk):
     try:
         selectedBook = Book.objects.get(pk=pk)
@@ -149,6 +152,7 @@ def update_book(request, pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@role_required(LIBRARIAN)
 def get_clients(request):
     search_query = request.GET.get('search', '')
     if search_query != '':
@@ -164,6 +168,7 @@ def get_clients(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@role_required(LIBRARIAN)
 def create_new_client(request):
     data = request.data
     data['library'] = request.user.library.id
@@ -175,6 +180,7 @@ def create_new_client(request):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
+@role_required(LIBRARIAN)
 def delete_client(request, client_id):
     try:
         selectedClient = Client.objects.get(pk=client_id)
@@ -185,6 +191,7 @@ def delete_client(request, client_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@role_required(WORKER)
 def get_copies(request, book_id):
     try:
         copies = BookCopy.objects.filter(book__library=request.user.library, book_id=book_id)
@@ -199,9 +206,12 @@ def get_copies(request, book_id):
                 borrow = Borrow.objects.filter(book_copy=copy, returned_at__isnull=True).first()
                 if borrow:
                     client = Client.objects.get(id=borrow.client.id)
+                    borrowed_on = timezone.localtime(borrow.borrowed_at)
+                    borrowed_on = borrowed_on.strftime('%Y-%m-%d %H:%M:%S')
                     copy_data['borrowed_by'] = {
                         'id': client.id,
-                        'name': client.name
+                        'name': client.name,
+                        'borrowed_on': borrowed_on
                     }
             copies_data.append(copy_data)
         return Response(copies_data, status=status.HTTP_200_OK)
@@ -212,6 +222,7 @@ def get_copies(request, book_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@role_required(LIBRARIAN)
 def borrow_copy(request):
     copy_id = request.data.get('copy_id')
     client_id = request.data.get('client_id')
@@ -228,6 +239,7 @@ def borrow_copy(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@role_required(LIBRARIAN)
 def return_copy(request):
     copy_id = request.data.get('copy_id')
     copy = BookCopy.objects.get(id=copy_id)

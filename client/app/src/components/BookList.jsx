@@ -2,11 +2,15 @@ import React, { useState} from 'react';
 import BookItem from './BookItem';
 import BookSearchBar from './bookSearchBar';
 import { useBooks } from '../contexts/booksContext';
+import {useUser} from '../contexts/userContext';
+
 import { FaSortUp, FaSortDown, FaSort } from 'react-icons/fa';
 
 const BookList = () => {
   const booksPerPage = 5; // might add an option to choose how much books are on each page
   const {books, currentBooksPage, setCurrentBooksPage} = useBooks();
+  const {hasRequiredRole} = useUser();
+
   const [sortConfig, setSortConfig] = useState({ key: 'title', direction: 'asc' });
   const indexOfLastItem = currentBooksPage * booksPerPage;
   const indexOfFirstItem = indexOfLastItem - booksPerPage;
@@ -67,7 +71,7 @@ const BookList = () => {
             <th onClick={() => handleSort('copies_available')}>
               Copies available {getSortIcon('copies_available')}
             </th>
-            <th>Edit options</th>
+            {hasRequiredRole('manager') && <th>Edit options</th>}
           </tr>
         </thead>
         <tbody>

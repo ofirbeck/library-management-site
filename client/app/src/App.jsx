@@ -1,7 +1,6 @@
 import '@picocss/pico';
 import './App.css'
 import React, {useEffect} from 'react';
-import { jwtDecode } from "jwt-decode";
 import { BooksProvider } from './contexts/booksContext';
 import { ClientsProvider } from './contexts/clientsContext';
 import { UserProvider, useUser } from './contexts/userContext';
@@ -13,14 +12,8 @@ import ClientsList from './components/ClientsList';
 import UsersList from './components/UsersList';
 
 const AppContent = () => {
-  const { currentScreen, setCurrentScreen, setUsername} = useUser();
-
-  const handleLogout = () => {
-    setUsername('');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setCurrentScreen('login');
-  };
+  const {user, currentScreen, setCurrentScreen, handleLogout, hasRequiredRole} = useUser();
+    
 
   if (!localStorage.getItem('access_token')) {
     return (
@@ -39,18 +32,24 @@ const AppContent = () => {
     );
   }
   else {
+    if(user === null)
+    {
+      return (
+          <h2>Loading...</h2>
+      )
+    }
     return (
       <ClientsProvider>
-      {/* <h2>Welcome {user.username} to the {user.libraryName} library</h2> */}
+      <h2>{user.username}, welcome to the {user.libraryName} library</h2>
       <button onClick={handleLogout} className="contrast">Logout</button>
       <div className="button-group">
       <button onClick={() => setCurrentScreen('view_books')}>View Books</button>
-      <button onClick={() => setCurrentScreen('view_clients')}>View Clients</button>
-      <button onClick={() => setCurrentScreen('view_users')}>manage the library's workers</button>
+      {hasRequiredRole('librarian') && (<button onClick={() => setCurrentScreen('view_clients')}>View Clients</button>)}
+      {hasRequiredRole('manager') && (<button onClick={() => setCurrentScreen('view_users')}>manage the library's workers</button>)}
       </div>
       {currentScreen === 'view_books' && (
             <BooksProvider>
-              <BookForm/>
+              {hasRequiredRole('manager') && (<BookForm/>)}
               <BookList/>
             </BooksProvider>
           )}

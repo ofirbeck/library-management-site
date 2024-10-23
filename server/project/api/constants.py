@@ -8,6 +8,9 @@ GENRE_CHOICES = [
     ('Children', 'Children'),
 ]
 
+MANAGER = 'manager'
+LIBRARIAN = 'librarian'
+WORKER = 'worker'
 ROLE_CHOICES = (
         ('manager', 'Manager'),
         ('librarian', 'Librarian'),

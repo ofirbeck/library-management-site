@@ -1,5 +1,7 @@
 import React from 'react';
 import {useBooks} from '../contexts/booksContext';
+import {useUser} from '../contexts/userContext';
+
 import CopiesList from './CopiesList';
 
 const BookItem = ({book}) => {
@@ -8,6 +10,7 @@ const BookItem = ({book}) => {
          updateTitle,
          deleteBook,
        } = useBooks();
+    const {hasRequiredRole} = useUser();
     return (
     <tr>
       <td>
@@ -17,6 +20,7 @@ const BookItem = ({book}) => {
       <td>{book.author} </td>
       <td>{book.genre} </td>
       <td>{book.copies_available}</td>
+      {hasRequiredRole('manager') && (
       <td>
       <input
         type="text"
@@ -30,6 +34,7 @@ const BookItem = ({book}) => {
           Delete
         </button>
       </td>
+    )}
     </tr>
   );
 };

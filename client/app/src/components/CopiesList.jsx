@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useClients } from '../contexts/clientsContext';
+import {useUser} from '../contexts/userContext';
 
 const CopiesList = ({ bookId }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [copies, setCopies] = useState([]);
   const { fetchClients, clients } = useClients();
+  const {hasRequiredRole} = useUser();
 
   const handleOpenCopies = () => {
     setIsDialogOpen(true);
-    fetchClients();
+    if(hasRequiredRole('librarian'))
+      fetchClients();
     fetchCopies();
   };
 
@@ -81,14 +84,16 @@ const CopiesList = ({ bookId }) => {
     <div key={copy.id}>
         <p>Copy ID: {copy.id}</p>
         <p>Borrowed by: {copy.borrowed_by.name}</p>
-        <button onClick={() => handleReturn(copy.id)}>Return</button>
+        <p>Borrowed on: {copy.borrowed_by.borrowed_on}</p>
+        {hasRequiredRole('librarian') && <button onClick={() => handleReturn(copy.id)}>Return</button>}
+        <p> ----------------------------------------------------------------------- </p>
     </div>
     ))}
     <h3>Available Copies</h3>
     {copies.filter(copy => !copy.is_borrowed).map(copy => (
     <div key={copy.id}>
         <p>Copy ID: {copy.id}</p>
-        <select onChange={(e) => handleBorrow(copy.id, e.target.value)}>
+        {hasRequiredRole('librarian') && <select onChange={(e) => handleBorrow(copy.id, e.target.value)}>
         <option value="">Select Client to borrow this copy</option>
         {clients.map(client => (
             <option key={client.id} value={client.id}>
@@ -96,7 +101,7 @@ const CopiesList = ({ bookId }) => {
             </option>
         ))}
         </select>
-        {/* <button onClick={() => handleBorrow(copy.id)}>Borrow</button> */}
+    }
     </div>
     ))}
     </div>

@@ -3,10 +3,14 @@ import { jwtDecode } from "jwt-decode";
 
 const UserContext = createContext();
 
+const ROLE_HIERARCHY = {
+  'worker': 1,
+  'librarian': 2,
+  'manager': 3,
+};
+
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [libraryName, setLibraryName] = useState("");
   const [currentScreen, setCurrentScreen] = useState("");
 
   useEffect(() => {
@@ -20,19 +24,28 @@ export const UserProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchUserInfo = async (token) => {
+  const hasRequiredRole = (minRole) => {
+    return ROLE_HIERARCHY[user.role] >= ROLE_HIERARCHY[minRole];
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    setCurrentScreen('login');
+  };
+
+  const fetchUserInfo = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/api/user/', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json'
         }
       });
       if (response.ok) {
         const data = await response.json();
         setUser(data);
-        setUsername(data.username);
-        setLibraryName(data.library.name);
       } else {
         setUser(null);
       }
@@ -80,13 +93,14 @@ export const UserProvider = ({ children }) => {
           setCurrentScreen('login');
         }
       } else {
+        fetchUserInfo()
         setCurrentScreen('view_books');
       }
     }
   };
 
   return (
-    <UserContext.Provider value={{currentScreen, setCurrentScreen, user, setUser, username, setUsername, libraryName, setLibraryName, checkTokenValidity}}>
+    <UserContext.Provider value={{currentScreen, setCurrentScreen, hasRequiredRole, handleLogout, user, setUser, checkTokenValidity}}>
       {children}
     </UserContext.Provider>
   );

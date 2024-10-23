@@ -74,7 +74,7 @@ const UsersList = () => {
 
   return (
     <div>
-      <button onClick={() => setIsDialogOpen(true)}>Add a New User</button>
+      <button onClick={() => setIsDialogOpen(true)}>Add a New worker</button>
       <dialog open={isDialogOpen}>
       <form onSubmit={handleCreateUser}>
       <button type="button" className="secondary" onClick={() => setIsDialogOpen(false)} style={{ float: 'right' }}>X</button>
