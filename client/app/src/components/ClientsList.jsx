@@ -54,11 +54,10 @@ const ClientsList = () => {
     <div>
       <button onClick={() => setIsDialogOpen(true)}>Add a New Client</button>
       <dialog open={isDialogOpen}>
-      <div className='popup'>
       <form onSubmit={handleCreateClient}>
       <button type="button" className="secondary" onClick={() => setIsDialogOpen(false)} style={{ float: 'right' }}>X</button>
-        <div>
-          <label htmlFor="name">Client name:</label>
+        <br></br>
+        <label htmlFor="name">Client name:</label>
           <input
             type="text"
             id="name"
@@ -66,8 +65,6 @@ const ClientsList = () => {
             onChange={(e) => setName(e.target.value)}
             required
           />
-        </div>
-        <div>
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -76,11 +73,9 @@ const ClientsList = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
         <button type="submit">Add Client</button>
       </form>
       {message && <p>{message}</p>}
-      </div>
       </dialog>
       <h2>Clients List</h2>
       <ul>

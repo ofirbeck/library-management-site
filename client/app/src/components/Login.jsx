@@ -1,11 +1,9 @@
 import React, { useState, useEffect} from 'react';
 import {useUser} from '../contexts/userContext';
-import {useUI} from '../contexts/UIContext';
 
 
 const Login = () => {
-    const {setCurrentScreen} = useUI();
-    const {setUser, setUsername, username} = useUser();
+    const {setUser, setUsername, username, setCurrentScreen} = useUser();
     const [password, setPassword] = useState('');
     const [credsErrorMessage, setCredsErrorMessage] = useState('');
 
@@ -29,6 +27,7 @@ const Login = () => {
           console.log('Login successful:', data);
           localStorage.setItem('access_token', data.access);
           localStorage.setItem('refresh_token', data.refresh);
+          //localStorage.setItem('user_role', data.user.role);
           setUser(data.user);
           setCredsErrorMessage('');
           setCurrentScreen('view_books');

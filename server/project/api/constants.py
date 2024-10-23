@@ -8,4 +8,10 @@ GENRE_CHOICES = [
     ('Children', 'Children'),
 ]
 
+ROLE_CHOICES = (
+        ('manager', 'Manager'),
+        ('librarian', 'Librarian'),
+        ('worker', 'Worker'),
+)
+
 MAX_COPIES_ALLOWED = 99

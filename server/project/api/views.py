@@ -8,7 +8,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializer import *
 from .models import Book
-from .constants import GENRE_CHOICES
+from .constants import GENRE_CHOICES, ROLE_CHOICES
+from .decorators import role_required
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -36,6 +37,51 @@ def login(request):
         })
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@role_required('manager')
+def create_user(request):
+    data = request.data.copy()
+    data['library'] = request.user.library.id
+    serializer = UserCreateSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@role_required('manager')
+def get_users_in_library(request):
+    users = User.objects.filter(library=request.user.library).exclude(id=request.user.id)
+    serializedData = UserSerializer(users, many=True).data
+    return Response(serializedData)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@role_required('manager')
+def delete_user(request, user_id):
+    try:
+        selectedUser = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    selectedUser.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@role_required('manager')
+def get_roles_list(request):
+    roles = [role[0] for role in ROLE_CHOICES]
+    return Response(roles)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -65,7 +111,7 @@ def get_book_list(request):
 @permission_classes([IsAuthenticated])
 def create_new_book(request):
     data = request.data
-    data['library'] = request.user.library.id
+    data['library'] = request.user.library
     serializer = BookSerializer(data=data)
     if serializer.is_valid():
         newBook = serializer.save()
@@ -127,6 +173,15 @@ def create_new_client(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_client(request, client_id):
+    try:
+        selectedClient = Client.objects.get(pk=client_id)
+    except Client.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    selectedClient.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

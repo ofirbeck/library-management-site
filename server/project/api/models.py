@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.validators import MaxValueValidator
-from .constants import GENRE_CHOICES, MAX_COPIES_ALLOWED
+from .constants import GENRE_CHOICES, ROLE_CHOICES, MAX_COPIES_ALLOWED
 
 
 class Library(models.Model):
@@ -12,22 +12,11 @@ class Library(models.Model):
         return self.name
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ('manager', 'Manager'),
-        ('librarian', 'Librarian'),
-        ('worker', 'Worker'),
-    )
     library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='users')
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='worker')
-
-    class Meta:
-        permissions = [
-            ("manage_library", "Can manage the library"),
-            ("edit_books", "Can edit books"),
-            ("view_books", "Can view books"),
-        ]
+    
     def __str__(self):
         return self.username
 

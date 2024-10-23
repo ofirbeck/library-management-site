@@ -1,6 +1,22 @@
 from rest_framework import serializers
-from .utils import assign_permissions
 from .models import *
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'library', 'role']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password'],
+            library=validated_data['library'],
+            role=validated_data['role'],
+            is_staff=validated_data['role'] == 'manager',
+            is_superuser=False,
+            is_active=True
+        )
+        return user
 
 class LibraryAdminSerializer(serializers.Serializer):
     library_name = serializers.CharField(max_length=255)
@@ -21,7 +37,6 @@ class LibraryAdminSerializer(serializers.Serializer):
             is_superuser=False,
             is_active=True
         )
-        assign_permissions(admin_user)
         return library
 
 
