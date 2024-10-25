@@ -14,13 +14,19 @@ export const UserProvider = ({ children }) => {
   const [currentScreen, setCurrentScreen] = useState("");
 
   useEffect(() => {
-    checkTokenValidity();
+    const checkAndFetchUserInfo = async () => {
+      await checkTokenValidity();
+      if (localStorage.getItem('access_token')) {
+        await fetchUserInfo();
+      }
+    };
+    checkAndFetchUserInfo();
   }, []);
-
+    
   useEffect(() => {
     const interval = setInterval(() => {
       checkTokenValidity();
-    }, 3 * 60 * 1000);
+    }, 3 * 60 * 1000); // Check every 3 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -65,8 +71,9 @@ export const UserProvider = ({ children }) => {
     else {
       const decodedToken = jwtDecode(token);
       const currentTime = Date.now() / 1000;
+      const tokenExpiryTime = decodedToken.exp - currentTime;
 
-      if (decodedToken.exp < currentTime) {
+      if (tokenExpiryTime < 5 * 60) {
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
           const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
@@ -78,7 +85,6 @@ export const UserProvider = ({ children }) => {
           });
           if (response.ok) {
             const data = await response.json();
-            fetchUserInfo()
             localStorage.setItem('access_token', data.access);
             setCurrentScreen('view_books');
           } else {
@@ -93,7 +99,6 @@ export const UserProvider = ({ children }) => {
           setCurrentScreen('login');
         }
       } else {
-        fetchUserInfo()
         setCurrentScreen('view_books');
       }
     }

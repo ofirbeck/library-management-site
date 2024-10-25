@@ -43,7 +43,8 @@ const ClientsList = () => {
         setEmail('');
         fetchClients();
       } else {
-        setMessage('Error adding client.');
+        const errorData = await response.json();
+        setMessage(`Error adding client: ${errorData.email || 'Unknown error'}`);
       }
     } catch (error) {
       setMessage('Error adding client.');
@@ -74,8 +75,8 @@ const ClientsList = () => {
             required
           />
         <button type="submit">Add Client</button>
+        {message && <p>{message}</p>}
       </form>
-      {message && <p>{message}</p>}
       </dialog>
       <h2>Clients List</h2>
       <ul>

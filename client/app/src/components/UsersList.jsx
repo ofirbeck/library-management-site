@@ -106,8 +106,8 @@ const UsersList = () => {
         ))}
         </select>
         <button type="submit">Add a new worker</button>
+        {message && <p>{message}</p>}
       </form>
-      {message && <p>{message}</p>}
       </dialog>
       <h2>The library workers</h2>
       <ul>
